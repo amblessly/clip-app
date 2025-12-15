@@ -15,7 +15,7 @@ from video_processor import (
 )
 
 APP_NAME = "Auto Clip Studio"
-APP_TAGLINE = "Turn long videos into short clips"
+APP_LEAD = "Upload a video or add a YouTube link in the sidebar, then generate clips."
 
 ICON = {
     "app": "content_cut",
@@ -247,21 +247,27 @@ CURSOR_CSS = """
         margin-top: 4px;
         line-height: 1.4;
     }
-    .panel-card {
-        background: var(--bg-panel);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        height: 100%;
+    .app-hero {
+        margin-bottom: 1.25rem;
     }
-    .panel-title {
-        font-size: 0.7rem;
+    .app-title {
+        margin: 0;
+        font-size: 1.45rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+        color: var(--text);
+        letter-spacing: -0.02em;
+    }
+    .app-lead {
+        margin: 6px 0 0;
+        font-size: 0.875rem;
         color: var(--text-dim);
-        margin: 0 0 1rem;
+        line-height: 1.45;
+        max-width: 42rem;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: var(--bg-panel) !important;
+        border-color: var(--border-subtle) !important;
+        border-radius: var(--radius) !important;
     }
     /* YouTube-style clips grid */
     .yt-clips-section {
@@ -421,7 +427,7 @@ def render_sidebar_brand() -> None:
         f"""
         <div class="brand-block">
             <p class="brand-title">{APP_NAME}</p>
-            <p class="brand-sub">{APP_TAGLINE}</p>
+            <p class="brand-sub">Clip settings</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -432,27 +438,12 @@ def section_title(title: str, icon_name: str) -> None:
     st.markdown(f"#### {ic(icon_name)} {title}")
 
 
-def panel_start(title: str, icon_name: str) -> None:
-    st.markdown(
-        f'<div class="panel-card"><p class="panel-title">{title}</p>',
-        unsafe_allow_html=True,
-    )
-
-
-def panel_end() -> None:
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
 def render_header() -> None:
     st.markdown(
         f"""
-        <div style="margin-bottom:1.25rem;">
-            <h2 style="margin:0;font-size:1.35rem;font-weight:600;color:#e4e4e4;">
-                {APP_NAME}
-            </h2>
-            <p style="margin:4px 0 0;font-size:0.8rem;color:#6e6e6e;">
-                {APP_TAGLINE}
-            </p>
+        <div class="app-hero">
+            <h1 class="app-title">{APP_NAME}</h1>
+            <p class="app-lead">{APP_LEAD}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -580,7 +571,7 @@ def render_sidebar_settings(duration_sec: float | None = None) -> dict:
         value=1,
         help="1 = best for 8GB RAM (i5). 2 = slightly faster, more load.",
     )
-    st.sidebar.caption("1 worker = best for 8 GB RAM.")
+    st.sidebar.caption("Fast mode: stream copy, no AI captions.")
 
     return {
         "clip_duration": float(clip_duration),
@@ -637,19 +628,6 @@ def render_sidebar_youtube() -> tuple[str, bool, bool]:
             st.sidebar.image(meta.thumbnail, width="stretch")
 
     return url.strip(), fetch, clear
-
-
-def render_youtube_hint_in_main() -> None:
-    meta = st.session_state.get("video_meta")
-    if meta and st.session_state.get("source") == "youtube":
-        st.info(
-            f"**{meta.title}** — downloads when you click Generate.",
-            icon=":material/smart_display:",
-        )
-
-
-def render_upload_hint() -> None:
-    st.caption("Up to 10 GB · MP4, MOV, MKV, WEBM")
 
 
 def _format_log_line(line: str) -> str:

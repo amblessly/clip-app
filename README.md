@@ -146,13 +146,6 @@ clip-app/
 | Corrupted upload | Re-export the source video; check the processing log |
 | Slow processing | Lower clip count or reduce parallel workers if disk is slow |
 
-## Deploy (Netlify + Streamlit Cloud)
-
-- **Netlify** — hosts the static landing page in `public/` (see `netlify.toml`).
-- **Streamlit Cloud** — runs the app (`main.py`, FFmpeg via `packages.txt`).
-
-Full steps: **[DEPLOY.md](DEPLOY.md)**
-
 ## License
 
 MIT — use freely for personal and commercial projects.

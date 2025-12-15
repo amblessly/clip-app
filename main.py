@@ -17,11 +17,8 @@ from ui import (
     render_header,
     render_logs,
     prepare_slider_state,
-    render_upload_hint,
     render_sidebar_settings,
     render_sidebar_youtube,
-    render_youtube_hint_in_main,
-    section_title,
 )
 from video_processor import (
     UPLOAD_DIR,
@@ -240,14 +237,13 @@ def main() -> None:
     if yt_fetch:
         handle_youtube_fetch(yt_url)
 
-    col_upload, col_preview = st.columns([1, 1], gap="large")
-
-    with col_upload:
-        st.markdown("**Upload**")
-        render_upload_hint()
+    with st.container(border=True):
+        st.markdown("##### :material/cloud_upload: Upload")
+        st.caption("Up to 10 GB · MP4, MOV, MKV, AVI, WEBM, and more")
         uploaded = st.file_uploader(
-            "Video file",
+            "Choose a video file",
             type=["mp4", "mov", "mkv", "avi", "webm", "flv", "wmv", "m4v", "mpeg", "mpg"],
+            help="Saved to disk in chunks. No duration limit.",
             label_visibility="collapsed",
         )
 
@@ -283,30 +279,35 @@ def main() -> None:
                     st.session_state.process_logs.append(f"Validation failed: {err}")
                     st.error(err, icon=":material/error:")
 
-    with col_preview:
-        st.markdown("**Preview**")
-        path = st.session_state.get("upload_path")
-        if path and Path(path).exists() and st.session_state.get("video_valid"):
-            try:
-                info = get_video_info(Path(path))
-                m1, m2, m3 = st.columns(3)
-                m1.metric("Duration", f"{info.duration:.0f}s")
-                m2.metric("Resolution", f"{info.width}×{info.height}")
-                m3.metric("FPS", f"{info.fps:.1f}")
-                st.video(str(path))
-            except Exception as exc:
-                st.warning(f"Preview unavailable: {exc}")
-        elif st.session_state.get("source") == "youtube" and st.session_state.get("video_meta"):
-            render_youtube_hint_in_main()
-            meta = st.session_state.video_meta
-            if meta.thumbnail:
-                st.image(meta.thumbnail, width="stretch")
-            st.markdown(f"**{meta.title}**")
-            st.caption(meta.uploader)
-        else:
-            st.caption("Upload a file or fetch YouTube from the sidebar.")
+    path = st.session_state.get("upload_path")
+    show_file_preview = bool(
+        path and Path(path).exists() and st.session_state.get("video_valid")
+    )
+    show_yt_preview = bool(
+        st.session_state.get("source") == "youtube" and st.session_state.get("video_meta")
+    )
 
-    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    if show_file_preview or show_yt_preview:
+        with st.container(border=True):
+            st.markdown("##### :material/movie: Preview")
+            if show_file_preview:
+                try:
+                    info = get_video_info(Path(path))
+                    m1, m2, m3 = st.columns(3)
+                    m1.metric("Duration", f"{info.duration:.0f}s")
+                    m2.metric("Resolution", f"{info.width}×{info.height}")
+                    m3.metric("FPS", f"{info.fps:.1f}")
+                    st.video(str(path))
+                except Exception as exc:
+                    st.warning(f"Preview unavailable: {exc}")
+            elif show_yt_preview:
+                meta = st.session_state.video_meta
+                if meta.thumbnail:
+                    st.image(meta.thumbnail, width="stretch")
+                st.markdown(f"**{meta.title}**")
+                st.caption(
+                    f"{meta.uploader} · downloads when you click Generate clips"
+                )
 
     ready = can_generate()
     generate = st.button(
@@ -317,7 +318,7 @@ def main() -> None:
         use_container_width=True,
     )
     if not ready:
-        st.caption("Add a video first (upload or YouTube in sidebar).")
+        st.caption("Add a video file or fetch a YouTube link in the sidebar.")
 
     if generate and ready:
         dur = known_duration_sec()
