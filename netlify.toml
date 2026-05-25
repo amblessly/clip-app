@@ -1,0 +1,4 @@
+# Static landing (public/). Streamlit app → Streamlit Cloud — see DEPLOY.md
+[build]
+  command = "bash scripts/netlify-build.sh"
+  publish = "public"

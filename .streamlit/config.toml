@@ -1,0 +1,11 @@
+# Streamlit server limits (sizes are in megabytes)
+[server]
+maxUploadSize = 10240
+
+[theme]
+base = "dark"
+primaryColor = "#FFFFFF"
+backgroundColor = "#1c1c1c"
+secondaryBackgroundColor = "#252526"
+textColor = "#e4e4e4"
+font = "sans serif"

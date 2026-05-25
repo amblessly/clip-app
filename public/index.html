@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto Clip Studio</title>
+  <meta name="description" content="Turn long videos into short clips. Upload or YouTube, export MP4s." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1c1c1c;
+      --panel: #252526;
+      --text: #e4e4e4;
+      --muted: #9d9d9d;
+      --dim: #6e6e6e;
+      --accent: #3794ff;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    .card {
+      max-width: 520px;
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid #2a2a2a;
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      margin: 0 0 1.5rem;
+      color: var(--dim);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.65rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-primary {
+      background: #fff;
+      color: #1a1a1a;
+      border: 1px solid #d4d4d4;
+    }
+    .btn-primary:hover { background: #f0f0f0; transform: translateY(-1px); }
+    .btn-secondary {
+      background: #2d2d2d;
+      color: var(--text);
+      border: 1px solid #3c3c3c;
+    }
+    .btn-secondary:hover { background: #353535; }
+    .note {
+      margin-top: 1.25rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    code {
+      background: #1a1a1a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body { animation: none; }
+      .btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Auto Clip Studio</h1>
+    <p class="tagline">Turn long videos into short clips.<br />Upload or YouTube · export MP4s.</p>
+    <a id="open-app" class="btn btn-primary" href="#">Open app</a>
+    <a class="btn btn-secondary" href="https://github.com/" id="repo-link" rel="noopener">View on GitHub</a>
+    <p class="note">
+      The editor runs on <strong>Streamlit Cloud</strong> (FFmpeg + processing).<br />
+      This page is hosted on <strong>Netlify</strong>. Set <code>STREAMLIT_APP_URL</code> in Netlify env vars.
+    </p>
+  </main>
+  <script>
+    window.STREAMLIT_APP_URL = "";
+    window.REPO_URL = "";
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var appUrl = params.get("app") || window.STREAMLIT_APP_URL || "";
+      var repoUrl = params.get("repo") || window.REPO_URL || "https://github.com/";
+      var open = document.getElementById("open-app");
+      var repo = document.getElementById("repo-link");
+      repo.href = repoUrl;
+      if (appUrl) {
+        open.href = appUrl;
+        open.textContent = "Open app";
+      } else {
+        open.href = "#";
+        open.textContent = "Configure STREAMLIT_APP_URL";
+        open.addEventListener("click", function (e) {
+          e.preventDefault();
+          alert("In Netlify: Site settings → Environment variables → STREAMLIT_APP_URL = your Streamlit app URL");
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
